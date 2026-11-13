@@ -1,0 +1,28 @@
+{
+  "name": "pos-nightlife-multitenant",
+  "version": "1.0.0",
+  "description": "Sistema POS y Facturación Electrónica DIAN Multi-tenant Modular para Bares y Discotecas",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build:backend": "npm --prefix backend run build",
+    "build:frontend": "npm --prefix frontend run build"
+  },
+  "keywords": [
+    "pos",
+    "dian",
+    "colombia",
+    "multi-tenant",
+    "react",
+    "firestore",
+    "nodejs",
+    "feature-flags"
+  ],
+  "author": "",
+  "license": "ISC"
+}

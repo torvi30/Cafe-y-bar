@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Funciones auxiliares de autenticación y roles
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    function getUserDoc(uid) {
+      return get(/databases/$(database)/documents/users/$(uid)).data;
+    }
+
+    function isPlatformSuperadmin() {
+      return isAuthenticated() && (
+        getUserDoc(request.auth.uid).role == 'superadmin' ||
+        request.auth.token.email in ['victortamayopine@gmail.com', 'victortamayopinc@gmail.com', 'danielb.alzate1@gmail.com']
+      );
+    }
+
+    function isCompanyMember(companyId) {
+      return isAuthenticated() && (
+        isPlatformSuperadmin() ||
+        getUserDoc(request.auth.uid).companyId == companyId
+      );
+    }
+
+    function isCompanyAdmin(companyId) {
+      return isAuthenticated() && (
+        isPlatformSuperadmin() ||
+        (getUserDoc(request.auth.uid).companyId == companyId && getUserDoc(request.auth.uid).role in ['admin', 'superadmin'])
+      );
+    }
+
+    // ─── COLECCIÓN /users/{uid} ───
+    match /users/{uid} {
+      // Un usuario puede leer su propio perfil; el superadmin puede leer todos
+      allow read: if isOwner(uid) || isPlatformSuperadmin();
+      
+      // Creación permitida para auto-provisioning al registrarse
+      allow create: if isOwner(uid);
+
+      // Edición: usuario puede actualizar sus datos básicos (nombre, avatar); el superadmin puede editar roles y empresa asignada
+      allow update: if isPlatformSuperadmin() || (isOwner(uid) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'companyId']));
+
+      // Eliminación: solo superadmin
+      allow delete: if isPlatformSuperadmin();
+    }
+
+    // ─── COLECCIÓN /companies/{companyId} ───
+    match /companies/{companyId} {
+      // Superadmin puede leer/crear/editar/eliminar cualquier empresa
+      // Miembros asignados pueden leer su empresa
+      allow read: if isCompanyMember(companyId);
+      allow create, delete: if isPlatformSuperadmin();
+      allow update: if isCompanyAdmin(companyId);
+
+      // Subcolección de Productos
+      match /products/{productId} {
+        allow read: if isCompanyMember(companyId);
+        allow create, update, delete: if isCompanyAdmin(companyId);
+      }
+
+      // Subcolección de Órdenes y Ventas POS
+      match /orders/{orderId} {
+        allow read, create: if isCompanyMember(companyId);
+        allow update, delete: if isCompanyAdmin(companyId);
+      }
+
+      // Subcolección de Control de Caja y Turnos
+      match /shifts/{shiftId} {
+        allow read, create, update: if isCompanyMember(companyId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+
+      // Subcolección de Mesas / Comandas
+      match /tables/{tableId} {
+        allow read, write: if isCompanyMember(companyId);
+      }
+
+      // Subcolección de Inventario
+      match /inventory/{docId=**} {
+        allow read, write: if isCompanyMember(companyId);
+      }
+    }
+  }
+}

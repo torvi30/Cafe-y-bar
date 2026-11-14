@@ -25,3 +25,24 @@
 button {
   touch-action: manipulation;
 }
+
+/* Reglas de impresión para tiqueteras térmicas POS (58mm / 80mm) */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #thermal-print-area, #thermal-print-area * {
+    visibility: visible;
+  }
+  #thermal-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm !important;
+    margin: 0 !important;
+    padding: 2mm !important;
+    background: white !important;
+    color: black !important;
+    font-size: 11px !important;
+  }
+}

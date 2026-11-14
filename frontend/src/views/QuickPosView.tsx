@@ -13,6 +13,8 @@ import { createInvoiceTransaction } from '../services/invoiceService';
 import { registerSaleToActiveShift } from '../services/cashShiftService';
 import { clearTableInDb } from '../services/tableService';
 import { notifySuccess, notifyError } from '../lib/alerts';
+import { ThermalTicket } from '../components/pos/ThermalTicket';
+import { Printer } from 'lucide-react';
 
 const CATEGORIES = [
   { id: 'TODOS', label: '🔥 Todo', icon: '✨' },
@@ -115,6 +117,10 @@ export const QuickPosView: React.FC = () => {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handlePrintTicket = () => {
+    window.print();
   };
 
   return (
@@ -267,14 +273,34 @@ export const QuickPosView: React.FC = () => {
               </div>
             </div>
 
-            <button
-              onClick={() => setLastInvoice(null)}
-              className="w-full py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition active:scale-95 shadow-md shadow-amber-400/20"
-            >
-              Siguiente Venta
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handlePrintTicket}
+                className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold rounded-xl text-xs uppercase tracking-wider transition active:scale-95 border border-slate-700 flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Printer size={15} />
+                <span>Imprimir Ticket</span>
+              </button>
+
+              <button
+                onClick={() => setLastInvoice(null)}
+                className="flex-1 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition active:scale-95 shadow-md shadow-amber-400/20 cursor-pointer"
+              >
+                Siguiente Venta
+              </button>
+            </div>
           </div>
         </div>
+      )}
+
+      {/* Tique térmico oculto en pantalla normal, visible solo para impresión (@media print) */}
+      {lastInvoice && (
+        <ThermalTicket
+          invoice={lastInvoice}
+          businessName={settings?.businessName || 'BAR & DISCOTECA'}
+          nit={settings?.nit || '800045678'}
+          resolutionNumber={settings?.dianConfig?.resolutionNumber}
+        />
       )}
 
       {/* Modal para Crear / Editar Producto */}

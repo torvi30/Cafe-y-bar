@@ -29,6 +29,8 @@ interface PosState {
   customerEmail: string;
   selectedTableId: string | null;
   includeTip: boolean;
+  tipMode: '10%' | '5%' | 'custom' | 'none';
+  customTipAmount: number;
 
   // Acciones de Productos & Precios
   setProducts: (products: PosProduct[]) => void;
@@ -46,6 +48,8 @@ interface PosState {
   setCustomerEmail: (email: string) => void;
   setSelectedTableId: (tableId: string | null) => void;
   toggleTip: () => void;
+  setTipMode: (mode: '10%' | '5%' | 'custom' | 'none') => void;
+  setCustomTipAmount: (amount: number) => void;
 
   getTotals: () => {
     subtotal: number;
@@ -66,6 +70,8 @@ export const usePosStore = create<PosState>((set, get) => {
     customerEmail: '',
     selectedTableId: null,
     includeTip: true,
+    tipMode: '10%',
+    customTipAmount: 0,
 
     setProducts: (products) => set({ products }),
 
@@ -138,10 +144,25 @@ export const usePosStore = create<PosState>((set, get) => {
     setCustomerName: (customerName) => set({ customerName }),
     setCustomerEmail: (customerEmail) => set({ customerEmail }),
     setSelectedTableId: (selectedTableId) => set({ selectedTableId }),
-    toggleTip: () => set((state) => ({ includeTip: !state.includeTip })),
+    toggleTip: () =>
+      set((state) => ({
+        includeTip: !state.includeTip,
+        tipMode: !state.includeTip ? '10%' : 'none',
+      })),
+    setTipMode: (tipMode) =>
+      set(() => ({
+        tipMode,
+        includeTip: tipMode !== 'none',
+      })),
+    setCustomTipAmount: (customTipAmount) =>
+      set({
+        customTipAmount: Math.max(0, customTipAmount),
+        tipMode: 'custom',
+        includeTip: customTipAmount > 0,
+      }),
 
     getTotals: () => {
-      const { cart, includeTip } = get();
+      const { cart, includeTip, tipMode, customTipAmount } = get();
       let subtotal = 0;
       let taxAmount = 0;
       let itemsCount = 0;
@@ -168,9 +189,20 @@ export const usePosStore = create<PosState>((set, get) => {
 
       const roundedSubtotal = Math.round(subtotal);
       const roundedTax = Math.round(taxAmount);
-      // Propina voluntaria sugerida (10% sobre el consumo de los productos)
-      const tipAmount = includeTip ? Math.round(grossProductTotal * 0.1) : 0;
-      // Total a cobrar = Precio final de los productos (con impuesto ya incluido) + propina voluntaria si aplica
+
+      // Cálculo de la propina voluntaria (10%, 5%, valor manual o ninguna)
+      let tipAmount = 0;
+      if (includeTip) {
+        if (tipMode === '10%') {
+          tipAmount = Math.round(grossProductTotal * 0.1);
+        } else if (tipMode === '5%') {
+          tipAmount = Math.round(grossProductTotal * 0.05);
+        } else if (tipMode === 'custom') {
+          tipAmount = Math.round(customTipAmount || 0);
+        }
+      }
+
+      // Total a cobrar = Consumo de productos (con impuestos ya incluidos) + propina voluntaria editable
       const total = grossProductTotal + tipAmount;
 
       return {

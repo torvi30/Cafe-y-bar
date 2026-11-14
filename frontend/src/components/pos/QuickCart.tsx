@@ -23,6 +23,10 @@ export const QuickCart: React.FC<QuickCartProps> = ({ onCheckout, isProcessing }
     getTotals,
     includeTip,
     toggleTip,
+    tipMode,
+    setTipMode,
+    customTipAmount,
+    setCustomTipAmount,
   } = usePosStore();
 
   const { isFeatureActive } = useTenantConfig();
@@ -31,6 +35,7 @@ export const QuickCart: React.FC<QuickCartProps> = ({ onCheckout, isProcessing }
   // Calculadora rápida de cambio para barra (Vuelto)
   const [cashGiven, setCashGiven] = useState<number | null>(null);
   const [showCustomerInput, setShowCustomerInput] = useState(false);
+  const [isEditingTip, setIsEditingTip] = useState(false);
 
   const changeDue = cashGiven !== null && cashGiven >= total ? cashGiven - total : 0;
 
@@ -205,19 +210,91 @@ export const QuickCart: React.FC<QuickCartProps> = ({ onCheckout, isProcessing }
           <span className="font-mono text-slate-300">${taxAmount.toLocaleString('es-CO')}</span>
         </div>
 
-        {/* Feature Gate: Propina Voluntaria */}
+        {/* Feature Gate: Propina Voluntaria Editable */}
         <FeatureGate feature="propinaSugeridaEnabled">
-          <div className="flex justify-between items-center py-1 bg-[#090d16] px-2.5 rounded-xl border border-slate-800">
-            <label className="flex items-center gap-2 cursor-pointer text-slate-200 text-xs font-semibold">
-              <input
-                type="checkbox"
-                checked={includeTip}
-                onChange={toggleTip}
-                className="w-4 h-4 rounded bg-slate-800 border-slate-700 text-amber-400 focus:ring-0 cursor-pointer"
-              />
-              <span>Propina Voluntaria (10%):</span>
-            </label>
-            <span className="font-mono font-bold text-amber-300">${tipAmount.toLocaleString('es-CO')}</span>
+          <div className="bg-[#090d16] p-2 rounded-xl border border-slate-800 space-y-1.5">
+            <div className="flex justify-between items-center">
+              <label className="flex items-center gap-2 cursor-pointer text-slate-200 text-xs font-semibold">
+                <input
+                  type="checkbox"
+                  checked={includeTip}
+                  onChange={toggleTip}
+                  className="w-4 h-4 rounded bg-slate-800 border-slate-700 text-amber-400 focus:ring-0 cursor-pointer"
+                />
+                <span>Propina Voluntaria:</span>
+              </label>
+              <div className="flex items-center gap-1.5">
+                <span className="font-mono font-bold text-amber-300">${tipAmount.toLocaleString('es-CO')}</span>
+                <button
+                  type="button"
+                  onClick={() => setIsEditingTip(!isEditingTip)}
+                  className="text-[10px] text-amber-400 hover:text-amber-300 font-bold px-1.5 py-0.5 rounded bg-amber-400/10 border border-amber-400/20"
+                >
+                  {isEditingTip ? '✕' : '✏️'}
+                </button>
+              </div>
+            </div>
+
+            {/* Chips de porcentaje rápido y entrada manual */}
+            {includeTip && (
+              <div className="pt-1 border-t border-slate-800/80 space-y-1.5">
+                <div className="grid grid-cols-4 gap-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTipMode('10%');
+                      setIsEditingTip(false);
+                    }}
+                    className={`py-1 text-[10px] rounded font-bold transition ${
+                      tipMode === '10%'
+                        ? 'bg-amber-400 text-slate-950 shadow-sm'
+                        : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
+                    }`}
+                  >
+                    10%
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTipMode('5%');
+                      setIsEditingTip(false);
+                    }}
+                    className={`py-1 text-[10px] rounded font-bold transition ${
+                      tipMode === '5%'
+                        ? 'bg-amber-400 text-slate-950 shadow-sm'
+                        : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
+                    }`}
+                  >
+                    5%
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingTip(true)}
+                    className={`py-1 text-[10px] rounded font-bold transition col-span-2 ${
+                      tipMode === 'custom'
+                        ? 'bg-amber-400 text-slate-950 shadow-sm'
+                        : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
+                    }`}
+                  >
+                    Otro Valor
+                  </button>
+                </div>
+
+                {isEditingTip && (
+                  <div className="flex items-center gap-1.5 pt-1">
+                    <span className="text-[11px] text-slate-400 font-mono">$</span>
+                    <input
+                      type="number"
+                      placeholder="Valor exacto propina"
+                      value={customTipAmount || ''}
+                      onChange={(e) => setCustomTipAmount(Number(e.target.value))}
+                      className="w-full bg-[#07090e] border border-amber-400/50 rounded-lg px-2 py-1 text-xs text-amber-300 font-mono focus:outline-none focus:border-amber-400"
+                      autoFocus
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </FeatureGate>
 

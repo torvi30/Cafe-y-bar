@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { PosProduct, usePosStore } from '../../store/posStore';
 import { useTenantConfig } from '../../context/TenantConfigContext';
+import { useSuperAdmin } from '../../context/SuperAdminContext';
+import { useAuth } from '../../context/AuthContext';
 import { FeatureGate } from '../common/FeatureGate';
 import { createCompanyProduct, updateCompanyProduct } from '../../services/productService';
-import { notifyWarning, toastSuccess } from '../../lib/alerts';
+import { notifyWarning, notifyError, toastSuccess } from '../../lib/alerts';
+import { Loader2 } from 'lucide-react';
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -13,14 +16,23 @@ interface ProductModalProps {
 
 export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, productToEdit }) => {
   const { addProduct, updateProduct } = usePosStore();
-  const { tenantId, isFeatureActive } = useTenantConfig();
+  const { tenantId: contextTenantId, isFeatureActive } = useTenantConfig();
+  const superAdmin = useSuperAdmin();
+  const { user } = useAuth();
   const isInventoryEnabled = isFeatureActive('inventoryEnabled');
+
+  // Determinar el tenantId real con fallback para superadmin o usuario asignado
+  const activeTenantId =
+    contextTenantId ||
+    (user?.role === 'superadmin' ? superAdmin?.activeTenantId || superAdmin?.tenants?.[0]?.tenantId : user?.companyId) ||
+    '';
 
   const [name, setName] = useState('');
   const [category, setCategory] = useState<PosProduct['category']>('LICORES');
   const [price, setPrice] = useState<number>(0);
   const [taxType, setTaxType] = useState<PosProduct['taxType']>('IMPOCONSUMO_8');
   const [barcode, setBarcode] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   // Campos de Inventario
   const [stock, setStock] = useState<number>(10);
@@ -57,12 +69,19 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || price <= 0) {
       notifyWarning('Datos Incompletos', 'Por favor ingresa un nombre válido y un precio mayor a $0.');
       return;
     }
+
+    if (!activeTenantId) {
+      notifyError('Empresa No Encontrada', 'No hay un bar/empresa seleccionado o asignado para guardar el producto.');
+      return;
+    }
+
+    setIsSaving(true);
 
     const productData: PosProduct = {
       id: productToEdit ? productToEdit.id : `prod_${Date.now()}`,
@@ -82,17 +101,26 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
         : undefined,
     };
 
-    if (productToEdit) {
-      updateProduct(productToEdit.id, productData);
-      if (tenantId) updateCompanyProduct(tenantId, productToEdit.id, productData);
-      toastSuccess(`Producto "${name.trim()}" actualizado`);
-    } else {
-      addProduct(productData);
-      if (tenantId) createCompanyProduct(tenantId, productData);
-      toastSuccess(`Producto "${name.trim()}" creado`);
+    try {
+      if (productToEdit) {
+        await updateCompanyProduct(activeTenantId, productToEdit.id, productData);
+        updateProduct(productToEdit.id, productData);
+        toastSuccess(`Producto "${name.trim()}" actualizado en la nube`);
+      } else {
+        await createCompanyProduct(activeTenantId, productData);
+        addProduct(productData);
+        toastSuccess(`Producto "${name.trim()}" guardado en la nube`);
+      }
+      onClose();
+    } catch (err: any) {
+      console.error('Error guardando producto en Firestore:', err);
+      notifyError(
+        'Error al Guardar',
+        `No se pudo guardar en Firestore: ${err?.message || 'Verifica tus permisos de administrador o la conexión'}`
+      );
+    } finally {
+      setIsSaving(false);
     }
-
-    onClose();
   };
 
   return (
@@ -270,9 +298,11 @@ export const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, pro
             </button>
             <button
               type="submit"
-              className="flex-1 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-amber-400/20 active:scale-95"
+              disabled={isSaving}
+              className="flex-1 py-3 bg-amber-400 hover:bg-amber-300 disabled:opacity-50 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-amber-400/20 active:scale-95 flex items-center justify-center gap-2"
             >
-              {productToEdit ? 'Guardar Cambios' : 'Crear Producto'}
+              {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
+              {productToEdit ? (isSaving ? 'Guardando...' : 'Guardar Cambios') : (isSaving ? 'Creando...' : 'Crear Producto')}
             </button>
           </div>
         </form>

@@ -33,7 +33,7 @@ export function listenCompanyTables(
 ): () => void {
   if (!tenantId) return () => {};
 
-  const colRef = collection(db, 'tenants', tenantId, 'tables');
+  const colRef = collection(db, 'companies', tenantId, 'tables');
   const q = query(colRef, orderBy('name', 'asc'));
 
   return onSnapshot(
@@ -59,7 +59,7 @@ export async function createTableInDb(
   name: string,
   waiter: string
 ): Promise<TableTab> {
-  const colRef = collection(db, 'tenants', tenantId, 'tables');
+  const colRef = collection(db, 'companies', tenantId, 'tables');
   const newTable = {
     name,
     waiter,
@@ -86,7 +86,7 @@ export async function updateTableItemsInDb(
   tableId: string,
   items: CartItem[]
 ): Promise<void> {
-  const docRef = doc(db, 'tenants', tenantId, 'tables', tableId);
+  const docRef = doc(db, 'companies', tenantId, 'tables', tableId);
   const itemsCount = items.reduce((acc, i) => acc + i.quantity, 0);
   const total = items.reduce((acc, i) => acc + i.price * i.quantity, 0);
   const status = itemsCount > 0 ? 'BUSY' : 'OPEN';
@@ -104,7 +104,7 @@ export async function updateTableItemsInDb(
  * Libera una mesa tras cobrar la cuenta en el POS
  */
 export async function clearTableInDb(tenantId: string, tableId: string): Promise<void> {
-  const docRef = doc(db, 'tenants', tenantId, 'tables', tableId);
+  const docRef = doc(db, 'companies', tenantId, 'tables', tableId);
   await updateDoc(docRef, {
     items: [],
     itemsCount: 0,
@@ -118,7 +118,7 @@ export async function clearTableInDb(tenantId: string, tableId: string): Promise
  * Elimina una mesa permanentemente
  */
 export async function deleteTableFromDb(tenantId: string, tableId: string): Promise<void> {
-  const docRef = doc(db, 'tenants', tenantId, 'tables', tableId);
+  const docRef = doc(db, 'companies', tenantId, 'tables', tableId);
   await deleteDoc(docRef);
 }
 

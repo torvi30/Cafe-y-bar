@@ -53,7 +53,7 @@ export function listenCompanyInvoices(
 ): () => void {
   if (!tenantId) return () => {};
 
-  const colRef = collection(db, 'tenants', tenantId, 'invoices');
+  const colRef = collection(db, 'companies', tenantId, 'invoices');
   const q = query(colRef, orderBy('createdAt', 'desc'), limit(100));
 
   return onSnapshot(
@@ -102,7 +102,7 @@ export async function createInvoiceTransaction(
     inventoryEnabled?: boolean;
   }
 ): Promise<InvoiceRecord> {
-  const companyDocRef = doc(db, 'tenants', tenantId);
+  const companyDocRef = doc(db, 'companies', tenantId);
 
   return await runTransaction(db, async (transaction) => {
     // 1. Obtener la empresa para leer el consecutivo actual
@@ -121,7 +121,7 @@ export async function createInvoiceTransaction(
     if (payload.inventoryEnabled) {
       for (const item of payload.cart) {
         if (item.id) {
-          const productRef = doc(db, 'tenants', tenantId, 'products', item.id);
+          const productRef = doc(db, 'companies', tenantId, 'products', item.id);
           const productSnap = await transaction.get(productRef);
           if (productSnap.exists()) {
             const prodData = productSnap.data();
@@ -151,7 +151,7 @@ export async function createInvoiceTransaction(
       .padStart(16, '0') + Date.now().toString(16) + '4a6b24d7732e705cb418b76e5d88f615';
 
     // 5. Crear documento de la factura
-    const invoiceColRef = collection(db, 'tenants', tenantId, 'invoices');
+    const invoiceColRef = collection(db, 'companies', tenantId, 'invoices');
     const newInvoiceRef = doc(invoiceColRef);
 
     const invoiceData: Omit<InvoiceRecord, 'id'> = {

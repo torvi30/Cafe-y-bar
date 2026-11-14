@@ -22,7 +22,7 @@ export function listenActiveCashShift(
 ): () => void {
   if (!tenantId) return () => {};
 
-  const colRef = collection(db, 'tenants', tenantId, 'cashShifts');
+  const colRef = collection(db, 'companies', tenantId, 'cashShifts');
   const q = query(colRef, where('status', '==', 'OPEN'), limit(1));
 
   return onSnapshot(
@@ -63,7 +63,7 @@ export function listenCashShiftsHistory(
 ): () => void {
   if (!tenantId) return () => {};
 
-  const colRef = collection(db, 'tenants', tenantId, 'cashShifts');
+  const colRef = collection(db, 'companies', tenantId, 'cashShifts');
   const q = query(colRef, where('status', '==', 'CLOSED'), orderBy('closedAt', 'desc'), limit(50));
 
   return onSnapshot(
@@ -90,7 +90,7 @@ export async function openCashShiftInDb(
   cashierName: string,
   cashierUid?: string
 ): Promise<CashShift> {
-  const colRef = collection(db, 'tenants', tenantId, 'cashShifts');
+  const colRef = collection(db, 'companies', tenantId, 'cashShifts');
   const newShiftData = {
     shiftNumber: Date.now() % 10000,
     cashierName,
@@ -124,7 +124,7 @@ export async function registerSaleToActiveShift(
 ): Promise<void> {
   if (!tenantId || !shiftId) return;
 
-  const docRef = doc(db, 'tenants', tenantId, 'cashShifts', shiftId);
+  const docRef = doc(db, 'companies', tenantId, 'cashShifts', shiftId);
 
   const updates: any = {
     updatedAt: serverTimestamp(),
@@ -150,7 +150,7 @@ export async function addMovementToActiveShift(
   movement: CashMovement,
   existingMovements: CashMovement[]
 ): Promise<void> {
-  const docRef = doc(db, 'tenants', tenantId, 'cashShifts', shiftId);
+  const docRef = doc(db, 'companies', tenantId, 'cashShifts', shiftId);
   await updateDoc(docRef, {
     movements: [...existingMovements, movement],
     updatedAt: serverTimestamp(),
@@ -167,7 +167,7 @@ export async function closeCashShiftInDb(
   expectedCash: number,
   notes?: string
 ): Promise<void> {
-  const docRef = doc(db, 'tenants', tenantId, 'cashShifts', shiftId);
+  const docRef = doc(db, 'companies', tenantId, 'cashShifts', shiftId);
   const difference = countedCash - expectedCash;
 
   await updateDoc(docRef, {

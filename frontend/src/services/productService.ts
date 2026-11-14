@@ -28,10 +28,11 @@ export function listenCompanyProducts(
         id: d.id,
         ...d.data(),
       })) as PosProduct[];
+      console.log(`[Firestore] Recibidos ${list.length} productos para company ${companyId}`);
       onUpdate(list);
     },
     (err) => {
-      console.warn(`Error escuchando productos de ${companyId}:`, err);
+      console.error(`[Firestore ERROR] Escuchando productos de ${companyId}:`, err);
     }
   );
 }

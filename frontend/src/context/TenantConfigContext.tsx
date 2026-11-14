@@ -102,7 +102,7 @@ export const TenantConfigProvider: React.FC<{ children: React.ReactNode }> = ({ 
   // Si es superadmin usa el tenant activo seleccionado; si es usuario normal usa su companyId
   const effectiveTenantId =
     user?.role === 'superadmin'
-      ? superAdmin.activeTenantId || ''
+      ? superAdmin.activeTenantId || superAdmin.tenants?.[0]?.tenantId || ''
       : user?.companyId || '';
 
   const [settings, setSettings] = useState<TenantSettings>(emptySettings);

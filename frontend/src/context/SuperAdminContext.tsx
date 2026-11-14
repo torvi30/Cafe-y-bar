@@ -76,6 +76,8 @@ export const SuperAdminProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           if (!exists) {
             setActiveTenantIdState(companiesList[0].tenantId);
             localStorage.setItem('saas_active_tenant_id', companiesList[0].tenantId);
+          } else if (currentSaved) {
+            setActiveTenantIdState(currentSaved);
           }
         } else {
           setActiveTenantIdState(null);

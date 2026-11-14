@@ -51,8 +51,13 @@ export const QuickPosView: React.FC = () => {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
 
   useEffect(() => {
-    if (!tenantId) return;
+    if (!tenantId) {
+      console.log('[QuickPosView] tenantId no disponible aún:', tenantId);
+      return;
+    }
+    console.log('[QuickPosView] Iniciando escucha de productos para tenantId:', tenantId);
     const unsub = listenCompanyProducts(tenantId, (prods) => {
+      console.log('[QuickPosView] Seteando productos en Zustand:', prods.length);
       setProducts(prods);
     });
     return () => unsub();

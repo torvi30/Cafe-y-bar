@@ -80,17 +80,18 @@ const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     );
   }
 
-  // 3. Super Administrador de la plataforma: Acceso completo
+  // 3. Super Administrador de la plataforma: Acceso completo concedido
   if (user.role === 'superadmin') {
     return <>{children}</>;
   }
 
-  // 4. Si el usuario NO es superadmin y NO tiene empresa asignada -> Gatekeeper obligatorio
-  if (!user.companyId) {
+  // 4. Si el usuario NO es superadmin y NO tiene empresa asignada (companyId es null, vacío o 'unassigned')
+  // -> BLOQUEO TOTAL OBLIGATORIO en pantalla de espera
+  if (!user.companyId || user.companyId === 'unassigned') {
     return <UnassignedUserView />;
   }
 
-  // 5. Usuario regular con empresa legalmente asignada
+  // 5. Usuario regular con empresa formalmente asignada
   return <>{children}</>;
 };
 

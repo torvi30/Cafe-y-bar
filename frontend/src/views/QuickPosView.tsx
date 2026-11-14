@@ -215,7 +215,7 @@ export const QuickPosView: React.FC = () => {
         </div>
 
         {/* Grilla de Productos */}
-        <div className="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 pr-1 content-start auto-rows-max">
+        <div className="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 pr-1 content-start auto-rows-max">
           {filteredProducts.length === 0 ? (
             <div className="col-span-full py-16 text-center text-slate-500">
               <span className="text-3xl block mb-2 opacity-40">🔍</span>

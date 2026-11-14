@@ -88,7 +88,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
             ${product.price.toLocaleString('es-CO')}
           </span>
           <span className="text-[9px] text-slate-400 font-medium">
-            {product.taxType === 'IMPOCONSUMO_8' ? 'ICO 8%' : 'IVA 19%'}
+            {product.taxType === 'IMPOCONSUMO_8' ? 'ICO 8% incl.' : product.taxType === 'IVA_19' ? 'IVA 19% incl.' : 'Exento'}
           </span>
         </div>
 

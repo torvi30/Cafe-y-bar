@@ -145,11 +145,14 @@ export const usePosStore = create<PosState>((set, get) => {
       let subtotal = 0;
       let taxAmount = 0;
       let itemsCount = 0;
+      let grossProductTotal = 0;
 
       cart.forEach((item) => {
         const lineTotal = item.price * item.quantity;
         itemsCount += item.quantity;
+        grossProductTotal += lineTotal;
 
+        // El precio del producto ya incluye el impuesto (IVA o Impoconsumo 8%)
         if (item.taxType === 'IMPOCONSUMO_8') {
           const lineBase = lineTotal / 1.08;
           subtotal += lineBase;
@@ -165,8 +168,10 @@ export const usePosStore = create<PosState>((set, get) => {
 
       const roundedSubtotal = Math.round(subtotal);
       const roundedTax = Math.round(taxAmount);
-      const tipAmount = includeTip ? Math.round(roundedSubtotal * 0.1) : 0;
-      const total = roundedSubtotal + roundedTax + tipAmount;
+      // Propina voluntaria sugerida (10% sobre el consumo de los productos)
+      const tipAmount = includeTip ? Math.round(grossProductTotal * 0.1) : 0;
+      // Total a cobrar = Precio final de los productos (con impuesto ya incluido) + propina voluntaria si aplica
+      const total = grossProductTotal + tipAmount;
 
       return {
         subtotal: roundedSubtotal,

@@ -201,23 +201,23 @@ export const QuickCart: React.FC<QuickCartProps> = ({ onCheckout, isProcessing }
         </div>
 
         <div className="flex justify-between">
-          <span>Impuestos (ICO 8% / IVA):</span>
+          <span>Impuestos (ICO 8% / IVA ya incl.):</span>
           <span className="font-mono text-slate-300">${taxAmount.toLocaleString('es-CO')}</span>
         </div>
 
         {/* Feature Gate: Propina Voluntaria */}
         <FeatureGate feature="propinaSugeridaEnabled">
-          <div className="flex justify-between items-center py-0.5">
-            <label className="flex items-center gap-1.5 cursor-pointer text-slate-300">
+          <div className="flex justify-between items-center py-1 bg-[#090d16] px-2.5 rounded-xl border border-slate-800">
+            <label className="flex items-center gap-2 cursor-pointer text-slate-200 text-xs font-semibold">
               <input
                 type="checkbox"
                 checked={includeTip}
                 onChange={toggleTip}
-                className="rounded bg-slate-800 border-slate-700 text-amber-400 focus:ring-0"
+                className="w-4 h-4 rounded bg-slate-800 border-slate-700 text-amber-400 focus:ring-0 cursor-pointer"
               />
-              <span>Propina (10%):</span>
+              <span>Propina Voluntaria (10%):</span>
             </label>
-            <span className="font-mono text-slate-300">${tipAmount.toLocaleString('es-CO')}</span>
+            <span className="font-mono font-bold text-amber-300">${tipAmount.toLocaleString('es-CO')}</span>
           </div>
         </FeatureGate>
 

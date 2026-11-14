@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="50%" stop-color="#090d16"/>
+      <stop offset="100%" stop-color="#050811"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#f59e0b" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Fondo redondo premium oscuro con borde dorado -->
+  <rect width="512" height="512" rx="128" fill="url(#bg)"/>
+  <rect x="8" y="8" width="496" height="496" rx="120" stroke="url(#gold)" stroke-width="4" stroke-opacity="0.3"/>
+
+  <!-- Halo de resplandor dorado de fondo -->
+  <circle cx="256" cy="256" r="140" fill="url(#glow)" filter="blur(30px)"/>
+
+  <!-- Corona Master SaaS en la parte superior -->
+  <path d="M190 170 L215 205 L256 160 L297 205 L322 170 L315 220 L197 220 Z" fill="url(#gold)" filter="url(#shadow)"/>
+  <circle cx="190" cy="165" r="7" fill="#fbbf24"/>
+  <circle cx="256" cy="155" r="8" fill="#fbbf24"/>
+  <circle cx="322" cy="165" r="7" fill="#fbbf24"/>
+
+  <!-- Copa Cóctel Martini estilizada y moderna -->
+  <path d="M166 230 L346 230 L266 335 L266 405 L310 405 C316 405 320 409 320 415 C320 421 316 425 310 425 L202 425 C196 425 192 421 192 415 C192 409 196 405 202 405 L246 405 L246 335 Z" fill="url(#gold)" filter="url(#shadow)"/>
+
+  <!-- Detalle interior cóctel / trago -->
+  <path d="M190 248 L322 248 L256 330 Z" fill="#ffffff" fill-opacity="0.25"/>
+
+  <!-- Rayo de velocidad / POS Ultra-rápido cruzado -->
+  <path d="M295 270 L270 310 L285 310 L260 355 L285 315 L270 315 Z" fill="#ffffff" opacity="0.9"/>
+
+  <!-- Destellos de estrellas -->
+  <polygon points="370,190 375,205 390,210 375,215 370,230 365,215 350,210 365,205" fill="#fbbf24" opacity="0.8"/>
+  <polygon points="140,290 143,300 153,303 143,306 140,316 137,306 127,303 137,300" fill="#fbbf24" opacity="0.6"/>
+</svg>

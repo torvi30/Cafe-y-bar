@@ -54,8 +54,8 @@ export const SuperAdminLayout: React.FC = () => {
           <div className="pb-3.5 mb-3.5 border-b border-slate-800/90">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 min-w-0">
-                <div className="w-8 h-8 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-400 flex items-center justify-center shrink-0">
-                  <Shield size={16} />
+                <div className="w-8 h-8 rounded-xl bg-[#07090e] border border-amber-400/40 p-1 flex items-center justify-center shrink-0 shadow-md shadow-amber-400/10">
+                  <img src="/logo.svg" alt="SaaS Logo" className="w-full h-full object-contain" />
                 </div>
                 {!isCollapsed && (
                   <div className="min-w-0">

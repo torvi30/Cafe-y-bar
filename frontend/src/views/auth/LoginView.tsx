@@ -160,8 +160,8 @@ export const LoginView: React.FC = () => {
       <div className="w-full max-w-md relative z-10 animate-in fade-in zoom-in-95 duration-200">
         {/* Cabecera / Identidad */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-400/10 border border-amber-400/30 text-amber-400 mb-3 shadow-lg shadow-amber-400/10 backdrop-blur-md">
-            <Building2 className="w-7 h-7" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-[#090d16] border border-amber-400/40 p-2 mb-3 shadow-xl shadow-amber-400/15 backdrop-blur-md">
+            <img src="/logo.svg" alt="Nightlife SaaS Logo" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-2xl font-black tracking-tight text-white flex items-center justify-center gap-2">
             <span>Nightlife POS & SaaS</span>

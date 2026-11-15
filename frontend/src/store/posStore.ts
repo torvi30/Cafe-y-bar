@@ -29,7 +29,7 @@ interface PosState {
   customerEmail: string;
   selectedTableId: string | null;
   includeTip: boolean;
-  tipMode: '10%' | '5%' | 'custom' | 'none';
+  tipMode: '0%' | '10%' | '5%' | 'custom' | 'none';
   customTipAmount: number;
 
   // Acciones de Productos & Precios
@@ -48,7 +48,7 @@ interface PosState {
   setCustomerEmail: (email: string) => void;
   setSelectedTableId: (tableId: string | null) => void;
   toggleTip: () => void;
-  setTipMode: (mode: '10%' | '5%' | 'custom' | 'none') => void;
+  setTipMode: (mode: '0%' | '10%' | '5%' | 'custom' | 'none') => void;
   setCustomTipAmount: (amount: number) => void;
 
   getTotals: () => {
@@ -69,8 +69,8 @@ export const usePosStore = create<PosState>((set, get) => {
     customerName: 'Consumidor Final',
     customerEmail: '',
     selectedTableId: null,
-    includeTip: true,
-    tipMode: '10%',
+    includeTip: false, // Por defecto inicia en 0% / Desmarcada
+    tipMode: '0%',
     customTipAmount: 0,
 
     setProducts: (products) => set({ products }),
@@ -147,12 +147,12 @@ export const usePosStore = create<PosState>((set, get) => {
     toggleTip: () =>
       set((state) => ({
         includeTip: !state.includeTip,
-        tipMode: !state.includeTip ? '10%' : 'none',
+        tipMode: !state.includeTip ? '10%' : '0%',
       })),
     setTipMode: (tipMode) =>
       set(() => ({
         tipMode,
-        includeTip: tipMode !== 'none',
+        includeTip: tipMode !== 'none' && tipMode !== '0%',
       })),
     setCustomTipAmount: (customTipAmount) =>
       set({
@@ -190,7 +190,7 @@ export const usePosStore = create<PosState>((set, get) => {
       const roundedSubtotal = Math.round(subtotal);
       const roundedTax = Math.round(taxAmount);
 
-      // Cálculo de la propina voluntaria (10%, 5%, valor manual o ninguna)
+      // Cálculo de la propina voluntaria (0%, 10%, 5%, valor manual o ninguna)
       let tipAmount = 0;
       if (includeTip) {
         if (tipMode === '10%') {
@@ -199,6 +199,8 @@ export const usePosStore = create<PosState>((set, get) => {
           tipAmount = Math.round(grossProductTotal * 0.05);
         } else if (tipMode === 'custom') {
           tipAmount = Math.round(customTipAmount || 0);
+        } else if (tipMode === '0%') {
+          tipAmount = 0;
         }
       }
 

@@ -217,14 +217,16 @@ export const QuickCart: React.FC<QuickCartProps> = ({ onCheckout, isProcessing }
               <label className="flex items-center gap-2 cursor-pointer text-slate-200 text-xs font-semibold">
                 <input
                   type="checkbox"
-                  checked={includeTip}
+                  checked={includeTip && tipAmount > 0}
                   onChange={toggleTip}
                   className="w-4 h-4 rounded bg-slate-800 border-slate-700 text-amber-400 focus:ring-0 cursor-pointer"
                 />
                 <span>Propina Voluntaria:</span>
               </label>
               <div className="flex items-center gap-1.5">
-                <span className="font-mono font-bold text-amber-300">${tipAmount.toLocaleString('es-CO')}</span>
+                <span className={`font-mono font-bold ${tipAmount > 0 ? 'text-amber-300' : 'text-slate-400'}`}>
+                  ${tipAmount.toLocaleString('es-CO')}
+                </span>
                 <button
                   type="button"
                   onClick={() => setIsEditingTip(!isEditingTip)}
@@ -235,66 +237,78 @@ export const QuickCart: React.FC<QuickCartProps> = ({ onCheckout, isProcessing }
               </div>
             </div>
 
-            {/* Chips de porcentaje rápido y entrada manual */}
-            {includeTip && (
-              <div className="pt-1 border-t border-slate-800/80 space-y-1.5">
-                <div className="grid grid-cols-4 gap-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setTipMode('10%');
-                      setIsEditingTip(false);
-                    }}
-                    className={`py-1 text-[10px] rounded font-bold transition ${
-                      tipMode === '10%'
-                        ? 'bg-amber-400 text-slate-950 shadow-sm'
-                        : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
-                    }`}
-                  >
-                    10%
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setTipMode('5%');
-                      setIsEditingTip(false);
-                    }}
-                    className={`py-1 text-[10px] rounded font-bold transition ${
-                      tipMode === '5%'
-                        ? 'bg-amber-400 text-slate-950 shadow-sm'
-                        : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
-                    }`}
-                  >
-                    5%
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIsEditingTip(true)}
-                    className={`py-1 text-[10px] rounded font-bold transition col-span-2 ${
-                      tipMode === 'custom'
-                        ? 'bg-amber-400 text-slate-950 shadow-sm'
-                        : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
-                    }`}
-                  >
-                    Otro Valor
-                  </button>
-                </div>
-
-                {isEditingTip && (
-                  <div className="flex items-center gap-1.5 pt-1">
-                    <span className="text-[11px] text-slate-400 font-mono">$</span>
-                    <input
-                      type="number"
-                      placeholder="Valor exacto propina"
-                      value={customTipAmount || ''}
-                      onChange={(e) => setCustomTipAmount(Number(e.target.value))}
-                      className="w-full bg-[#07090e] border border-amber-400/50 rounded-lg px-2 py-1 text-xs text-amber-300 font-mono focus:outline-none focus:border-amber-400"
-                      autoFocus
-                    />
-                  </div>
-                )}
+            {/* Chips de porcentaje rápido (0%, 5%, 10%, Otro Valor) y entrada manual */}
+            <div className="pt-1 border-t border-slate-800/80 space-y-1.5">
+              <div className="grid grid-cols-4 gap-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTipMode('0%');
+                    setIsEditingTip(false);
+                  }}
+                  className={`py-1 text-[10px] rounded font-bold transition ${
+                    !includeTip || tipMode === '0%'
+                      ? 'bg-amber-400 text-slate-950 shadow-sm'
+                      : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
+                  }`}
+                >
+                  0%
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTipMode('5%');
+                    setIsEditingTip(false);
+                  }}
+                  className={`py-1 text-[10px] rounded font-bold transition ${
+                    includeTip && tipMode === '5%'
+                      ? 'bg-amber-400 text-slate-950 shadow-sm'
+                      : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
+                  }`}
+                >
+                  5%
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTipMode('10%');
+                    setIsEditingTip(false);
+                  }}
+                  className={`py-1 text-[10px] rounded font-bold transition ${
+                    includeTip && tipMode === '10%'
+                      ? 'bg-amber-400 text-slate-950 shadow-sm'
+                      : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
+                  }`}
+                >
+                  10%
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsEditingTip(true)}
+                  className={`py-1 text-[10px] rounded font-bold transition ${
+                    includeTip && tipMode === 'custom'
+                      ? 'bg-amber-400 text-slate-950 shadow-sm'
+                      : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
+                  }`}
+                >
+                  Otro
+                </button>
               </div>
-            )}
+
+              {isEditingTip && (
+                <div className="flex items-center gap-1.5 pt-1">
+                  <span className="text-[11px] text-slate-400 font-mono">$</span>
+                  <input
+                    type="number"
+                    placeholder="Valor exacto propina"
+                    value={customTipAmount || ''}
+                    onChange={(e) => setCustomTipAmount(Number(e.target.value))}
+                    className="w-full bg-[#07090e] border border-amber-400/50 rounded-lg px-2 py-1 text-xs text-amber-300 font-mono focus:outline-none focus:border-amber-400"
+                    autoFocus
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </FeatureGate>
 

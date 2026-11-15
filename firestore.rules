@@ -65,14 +65,22 @@ service cloud.firestore {
         allow create, update, delete: if isCompanyAdmin(companyId);
       }
 
-      // Subcolección de Órdenes y Ventas POS
+      // Subcolección de Órdenes y Ventas POS / Facturas
       match /orders/{orderId} {
+        allow read, create: if isCompanyMember(companyId);
+        allow update, delete: if isCompanyAdmin(companyId);
+      }
+      match /invoices/{invoiceId} {
         allow read, create: if isCompanyMember(companyId);
         allow update, delete: if isCompanyAdmin(companyId);
       }
 
       // Subcolección de Control de Caja y Turnos
       match /shifts/{shiftId} {
+        allow read, create, update: if isCompanyMember(companyId);
+        allow delete: if isCompanyAdmin(companyId);
+      }
+      match /cashShifts/{shiftId} {
         allow read, create, update: if isCompanyMember(companyId);
         allow delete: if isCompanyAdmin(companyId);
       }

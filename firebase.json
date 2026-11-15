@@ -1,6 +1,5 @@
 {
   "hosting": {
-    "site": "oriente-auth",
     "public": "frontend/dist",
     "ignore": [
       "firebase.json",
@@ -19,4 +18,3 @@
     "indexes": "firestore.indexes.json"
   }
 }
-

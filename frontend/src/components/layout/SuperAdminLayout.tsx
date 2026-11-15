@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useSuperAdmin } from '../../context/SuperAdminContext';
 import {
@@ -12,13 +12,22 @@ import {
   ExternalLink,
   Shield,
   Layers,
+  Menu,
+  X,
 } from 'lucide-react';
 
 export const SuperAdminLayout: React.FC = () => {
   const { user, logout } = useAuth();
   const { tenants, activeTenantId, setActiveTenantId } = useSuperAdmin();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Cerrar menú móvil al navegar
+  useEffect(() => {
+    setIsMobileOpen(false);
+  }, [location.pathname]);
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold text-xs transition-all duration-150 ${
@@ -42,12 +51,35 @@ export const SuperAdminLayout: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#07090e] select-none text-white">
+    <div className="flex h-screen w-full overflow-hidden bg-[#07090e] select-none text-white relative">
+      {/* ─── BOTÓN FLOTANTE O CABECERA MÓVIL (VISIBLE EN CELULAR/TABLET) ─── */}
+      <div className="md:hidden fixed top-3 left-3 z-50">
+        <button
+          onClick={() => setIsMobileOpen(!isMobileOpen)}
+          className="p-2.5 bg-[#0e1422] border border-amber-500/40 text-amber-400 rounded-xl shadow-xl flex items-center gap-2 active:scale-95 transition"
+        >
+          {isMobileOpen ? <X size={18} /> : <Menu size={18} />}
+          <span className="text-xs font-black uppercase tracking-wider">Menú Superadmin</span>
+        </button>
+      </div>
+
+      {/* Backdrop oscuro para móvil cuando el menú está abierto */}
+      {isMobileOpen && (
+        <div
+          onClick={() => setIsMobileOpen(false)}
+          className="md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-40 animate-in fade-in duration-150"
+        />
+      )}
+
       {/* ─── SIDEBAR EXCLUSIVO DEL SUPER ADMIN (BACK-OFFICE) ─── */}
       <aside
-        className={`${
-          isCollapsed ? 'w-16' : 'w-64'
-        } bg-[#090d16] border-r border-amber-500/20 flex flex-col justify-between p-3.5 h-screen shrink-0 transition-all duration-200 z-30`}
+        className={`
+          ${isCollapsed ? 'md:w-16' : 'md:w-64'}
+          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+          fixed md:relative top-0 left-0
+          w-72 md:w-auto
+          bg-[#090d16] border-r border-amber-500/20 flex flex-col justify-between p-3.5 h-screen shrink-0 transition-all duration-200 z-50 md:z-30
+        `}
       >
         <div className="overflow-y-auto min-h-0 flex-1 pr-1 custom-scrollbar">
           {/* Cabecera Master Admin */}

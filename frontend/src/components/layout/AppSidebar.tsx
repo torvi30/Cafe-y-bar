@@ -1,15 +1,21 @@
-import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useTenantConfig } from '../../context/TenantConfigContext';
 import { useAuth } from '../../context/AuthContext';
 import { FeatureGate } from '../common/FeatureGate';
-import { LogOut, ChevronLeft, ChevronRight, Settings, ArrowLeft } from 'lucide-react';
+import { LogOut, ChevronLeft, ChevronRight, Settings, ArrowLeft, Menu, X } from 'lucide-react';
 
 export const AppSidebar: React.FC = () => {
   const { settings } = useTenantConfig();
   const { user, logout } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    setIsMobileOpen(false);
+  }, [location.pathname]);
 
   const isSuperadmin = user?.role === 'superadmin';
 
@@ -30,11 +36,34 @@ export const AppSidebar: React.FC = () => {
   };
 
   return (
-    <aside
-      className={`${
-        isCollapsed ? 'w-16' : 'w-60 xl:w-64'
-      } bg-[#0b0f19] border-r border-slate-800/80 flex flex-col justify-between p-3 h-screen select-none shrink-0 transition-all duration-200 z-20`}
-    >
+    <>
+      {/* Botón flotante móvil para abrir menú */}
+      <div className="md:hidden fixed top-2 left-2 z-50">
+        <button
+          onClick={() => setIsMobileOpen(!isMobileOpen)}
+          className="p-2 bg-[#0e1422] border border-amber-500/40 text-amber-400 rounded-xl shadow-lg active:scale-95 transition"
+        >
+          {isMobileOpen ? <X size={16} /> : <Menu size={16} />}
+        </button>
+      </div>
+
+      {/* Backdrop móvil */}
+      {isMobileOpen && (
+        <div
+          onClick={() => setIsMobileOpen(false)}
+          className="md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-40"
+        />
+      )}
+
+      <aside
+        className={`
+          ${isCollapsed ? 'md:w-16' : 'md:w-60 xl:w-64'}
+          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+          fixed md:relative top-0 left-0
+          w-72 md:w-auto
+          bg-[#0b0f19] border-r border-slate-800/80 flex flex-col justify-between p-3 h-screen select-none shrink-0 transition-all duration-200 z-50 md:z-20
+        `}
+      >
       <div className="overflow-y-auto min-h-0 flex-1 pr-1 custom-scrollbar">
         {/* Cabecera del Bar Activo */}
         <div className="pb-3 mb-3 border-b border-slate-800/80">
@@ -202,5 +231,6 @@ export const AppSidebar: React.FC = () => {
         </div>
       </div>
     </aside>
+    </>
   );
 };

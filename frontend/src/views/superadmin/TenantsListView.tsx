@@ -74,21 +74,21 @@ export const TenantsListView: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-[#07090e] p-6 text-white overflow-hidden select-none">
+    <div className="flex flex-col h-full w-full bg-[#07090e] p-3 sm:p-6 text-white overflow-hidden select-none pt-14 md:pt-6">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-5 shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4 mb-4 shrink-0">
         <div>
-          <h1 className="text-2xl font-black text-white flex items-center gap-3">
+          <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2 sm:gap-3">
             <span>🏢</span> Directorio de Clientes & Control de Flags
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-[11px] sm:text-xs text-slate-400 mt-1">
             Activa o desactiva módulos por negocio, gestiona el estado de pago y accede al POS de cada cliente.
           </p>
         </div>
 
         <button
           onClick={handleOpenCreateModal}
-          className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-amber-400/20 active:scale-95 flex items-center gap-2 cursor-pointer"
+          className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-amber-400/20 active:scale-95 flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto shrink-0"
         >
           <span className="text-base font-bold">+</span>
           <span>Nuevo Establecimiento</span>
@@ -96,13 +96,13 @@ export const TenantsListView: React.FC = () => {
       </div>
 
       {/* Barra de Filtros y Búsqueda */}
-      <div className="flex items-center justify-between gap-3 mb-4 shrink-0">
-        <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 shrink-0">
+        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           {['ALL', 'ACTIVE', 'TRIAL', 'SUSPENDED'].map((st) => (
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
                 statusFilter === st
                   ? 'bg-amber-400 text-slate-950'
                   : 'bg-[#0d121e] border border-slate-800 text-slate-400 hover:text-white'
@@ -119,7 +119,7 @@ export const TenantsListView: React.FC = () => {
           ))}
         </div>
 
-        <div className="relative w-80">
+        <div className="relative w-full sm:w-80">
           <span className="absolute left-3 top-2.5 text-xs text-slate-400">🔍</span>
           <input
             type="text"

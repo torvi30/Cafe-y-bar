@@ -128,14 +128,30 @@ export const QuickPosView: React.FC = () => {
     window.print();
   };
 
+  const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
+
   return (
-    <div className="flex h-full w-full bg-[#07090e] text-white p-3 gap-3 overflow-hidden">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-[#07090e] text-white p-2 sm:p-3 gap-2 sm:gap-3 overflow-hidden relative">
+      {/* Botón flotante móvil para ver el ticket del carrito */}
+      <div className="lg:hidden fixed bottom-4 right-4 z-40">
+        <button
+          onClick={() => setIsMobileCartOpen(!isMobileCartOpen)}
+          className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2 active:scale-95 transition border border-amber-300"
+        >
+          <span>🧾</span>
+          <span>Ver Ticket ({cart.reduce((sum, item) => sum + item.quantity, 0)})</span>
+          <span className="font-mono text-xs bg-slate-950 text-amber-300 px-2 py-0.5 rounded-full">
+            ${getTotals().total.toLocaleString('es-CO')}
+          </span>
+        </button>
+      </div>
+
       {/* ─── SECCIÓN IZQUIERDA: Catálogo táctil ─── */}
       <div className="flex-1 min-w-0 flex flex-col h-full overflow-hidden">
         {/* Cabecera Pro: Búsqueda, Turno y Botón Nuevo Producto */}
-        <div className="flex items-center justify-between gap-3 bg-[#0d121e] border border-slate-800/80 rounded-2xl p-2.5 mb-2.5 shrink-0">
+        <div className="flex items-center justify-between gap-2 sm:gap-3 bg-[#0d121e] border border-slate-800/80 rounded-2xl p-2 sm:p-2.5 mb-2 shrink-0">
           {/* Buscador táctil */}
-          <div className="relative flex-1 max-w-xs md:max-w-sm">
+          <div className="relative flex-1 max-w-full sm:max-w-xs md:max-w-sm">
             <span className="absolute left-3 top-2.5 text-xs text-slate-400">🔍</span>
             <input
               type="text"
@@ -155,7 +171,7 @@ export const QuickPosView: React.FC = () => {
           </div>
 
           {/* Información de Turno, DIAN y Botón + Producto */}
-          <div className="flex items-center gap-2.5 text-xs">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 text-xs">
             <div className="hidden lg:flex items-center gap-2 px-2.5 py-1 bg-slate-900/90 border border-slate-800 rounded-xl">
               <span className="text-[10px] text-slate-400">Consecutivo DIAN:</span>
               <span className="font-mono font-bold text-amber-400">
@@ -167,7 +183,7 @@ export const QuickPosView: React.FC = () => {
             <FeatureGate feature="cashControlEnabled">
               <Link
                 to="/caja"
-                className="px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-xl flex items-center gap-1.5 font-bold transition"
+                className="px-2 sm:px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-xl flex items-center gap-1 font-bold transition text-[11px]"
                 title="Ver estado de caja y arqueo"
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -192,7 +208,7 @@ export const QuickPosView: React.FC = () => {
             {/* BOTÓN RÁPIDO PARA CREAR PRODUCTO DESDE LA BARRA */}
             <button
               onClick={() => setIsProductModalOpen(true)}
-              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-3 py-1.5 rounded-xl text-xs uppercase tracking-wider transition shadow-md shadow-amber-400/20 active:scale-95 flex items-center gap-1.5 shrink-0"
+              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-2.5 sm:px-3 py-1.5 rounded-xl text-xs uppercase tracking-wider transition shadow-md shadow-amber-400/20 active:scale-95 flex items-center gap-1 shrink-0"
               title="Crear un nuevo producto o fijar precio"
             >
               <span className="font-bold text-sm leading-none">+</span>
@@ -202,12 +218,12 @@ export const QuickPosView: React.FC = () => {
         </div>
 
         {/* Chips de Categorías */}
-        <div className="flex gap-2 mb-2.5 overflow-x-auto pb-1 shrink-0 scrollbar-none">
+        <div className="flex gap-2 mb-2 overflow-x-auto pb-1 shrink-0 scrollbar-none">
           {CATEGORIES.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition active:scale-95 ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-bold whitespace-nowrap transition active:scale-95 ${
                 selectedCategory === cat.id
                   ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-400/20'
                   : 'bg-[#0d121e] border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800/80'
@@ -220,7 +236,7 @@ export const QuickPosView: React.FC = () => {
         </div>
 
         {/* Grilla de Productos */}
-        <div className="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 pr-1 content-start auto-rows-max">
+        <div className="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2 sm:gap-3 pr-1 content-start auto-rows-max pb-20 lg:pb-0">
           {filteredProducts.length === 0 ? (
             <div className="col-span-full py-16 text-center text-slate-500">
               <span className="text-3xl block mb-2 opacity-40">🔍</span>
@@ -240,9 +256,24 @@ export const QuickPosView: React.FC = () => {
         </div>
       </div>
 
-      {/* ─── SECCIÓN DERECHA: Carrito y Cobro ─── */}
-      <div className="w-[330px] xl:w-[370px] h-full shrink-0">
-        <QuickCart onCheckout={handleCheckout} isProcessing={isProcessing} />
+      {/* ─── SECCIÓN DERECHA: Carrito y Cobro (Drawer modal en móvil, panel fijo en Desktop) ─── */}
+      <div
+        className={`
+          ${isMobileCartOpen ? 'fixed inset-0 z-50 p-3 bg-black/80 backdrop-blur-sm flex justify-end' : 'hidden lg:block'}
+          lg:relative lg:w-[330px] xl:w-[370px] lg:h-full shrink-0
+        `}
+      >
+        <div className="w-full max-w-md lg:max-w-none h-full bg-[#0e131f] rounded-2xl border border-slate-800/80 flex flex-col relative overflow-hidden">
+          {isMobileCartOpen && (
+            <button
+              onClick={() => setIsMobileCartOpen(false)}
+              className="lg:hidden absolute top-2 right-2 z-20 w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center font-bold text-sm shadow-md"
+            >
+              ✕
+            </button>
+          )}
+          <QuickCart onCheckout={handleCheckout} isProcessing={isProcessing} />
+        </div>
       </div>
 
       {/* Modal / Toast de Factura DIAN emitida */}

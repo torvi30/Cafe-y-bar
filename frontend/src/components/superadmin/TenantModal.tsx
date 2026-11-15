@@ -20,7 +20,7 @@ export const TenantModal: React.FC<TenantModalProps> = ({ isOpen, onClose, tenan
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [plan, setPlan] = useState<SubscriptionPlan>('CLUB_PRO');
-  const [monthlyFee, setMonthlyFee] = useState<number>(190000);
+  const [monthlyFee, setMonthlyFee] = useState<string | number>(190000);
   const [prefix, setPrefix] = useState('SETT');
   const [resolutionNumber, setResolutionNumber] = useState('18764000001');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -202,13 +202,15 @@ export const TenantModal: React.FC<TenantModalProps> = ({ isOpen, onClose, tenan
               <div className="relative">
                 <span className="absolute left-3 top-2 font-mono font-bold text-emerald-400">$</span>
                 <input
-                  type="number"
-                  min="0"
-                  step="5000"
+                  type="text"
+                  inputMode="numeric"
                   required
-                  value={monthlyFee}
-                  onChange={(e) => setMonthlyFee(Number(e.target.value))}
-                  placeholder="190000"
+                  value={monthlyFee === 0 || monthlyFee === '' ? '' : monthlyFee}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, '');
+                    setMonthlyFee(val === '' ? '' : Number(val));
+                  }}
+                  placeholder="ej. 190000"
                   className="w-full bg-[#0e1422] border border-emerald-500/50 rounded-xl pl-7 pr-3 py-2 text-white font-mono font-bold text-sm focus:outline-none focus:border-emerald-400"
                 />
               </div>

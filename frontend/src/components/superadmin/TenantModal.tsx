@@ -177,6 +177,44 @@ export const TenantModal: React.FC<TenantModalProps> = ({ isOpen, onClose, tenan
             </div>
           </div>
 
+          {/* Plan de Suscripción y Mensualidad (COP) */}
+          <div className="grid grid-cols-2 gap-3 bg-[#07090e] p-3 rounded-2xl border border-amber-500/25">
+            <div>
+              <label className="font-bold text-amber-300 block mb-1">Plan de Suscripción SaaS</label>
+              <select
+                value={plan}
+                onChange={(e) => {
+                  const newPlan = e.target.value as SubscriptionPlan;
+                  setPlan(newPlan);
+                  if (PLAN_PRESETS[newPlan]) {
+                    setMonthlyFee(PLAN_PRESETS[newPlan].price);
+                  }
+                }}
+                className="w-full bg-[#0e1422] border border-slate-700 rounded-xl px-3 py-2 text-white font-bold focus:outline-none focus:border-amber-400"
+              >
+                <option value="LEGAL_DIAN">Plan Legal DIAN (Básico)</option>
+                <option value="CLUB_PRO">Plan Discoteca & Club Pro</option>
+                <option value="GASTROBAR_FULL">Plan Gastrobar & Lounge Full</option>
+              </select>
+            </div>
+            <div>
+              <label className="font-bold text-emerald-400 block mb-1">Tarifa Mensual Cobrada (COP) *</label>
+              <div className="relative">
+                <span className="absolute left-3 top-2 font-mono font-bold text-emerald-400">$</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="5000"
+                  required
+                  value={monthlyFee}
+                  onChange={(e) => setMonthlyFee(Number(e.target.value))}
+                  placeholder="190000"
+                  className="w-full bg-[#0e1422] border border-emerald-500/50 rounded-xl pl-7 pr-3 py-2 text-white font-mono font-bold text-sm focus:outline-none focus:border-emerald-400"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* NIT y Ciudad */}
           <div className="grid grid-cols-2 gap-3">
             <div>
